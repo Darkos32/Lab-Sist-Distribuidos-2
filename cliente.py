@@ -8,7 +8,9 @@ s.connect((HOST, PORT))
 arquivo = input("Diga o nome do arquivo")
 s.send(str.encode(arquivo))
 resposta = s.recv(1024)
-print("As palavras mais recorrentes são:")
-for palavra in resposta:
-    print(palavra+"\n")
+print(resposta)
+# print("As palavras mais recorrentes são:")
+# for palavra in resposta:
+#     print(palavra+"\n")
+#s.send(str.encode("Kay"))
 s.close()

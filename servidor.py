@@ -9,20 +9,23 @@ def acesso_dados(nome_arquivo):
     try:
         arquivo = open(nome_arquivo, 'r')
     except:
-        raise exception("Arquivo não existente")
+        raise RuntimeError("Arquivo não existente")
     return arquivo.read()
 
 
 def processamento(nome_arquivo):
     try:
         conteudo = acesso_dados(nome_arquivo)
-    except exception as err:
+    except RuntimeError as err:
+        print(err)
         resposta = err
         return resposta
-
-
-def parse_conteudo(conteudo):
     palavras = conteudo.split()
+    dicio = contar(palavras)
+    mais_recorrente = mais_recorrente(dicio)
+
+
+def contar(palavras):
     dicio = {}
     for palavra in palavras:
         if dicio.get(palavra) != None:
@@ -32,16 +35,38 @@ def parse_conteudo(conteudo):
     return dicio
 
 
-def contar(dicio):
+def insere(elemento, vetor, pos):
+    temp = []
+
+    for i in range(0, len(vetor)):
+        if i == pos:
+            temp.append(elemento)
+        if i != len(vetor)-1:
+            temp.append(vetor[i])
+    return temp
+
+
+def mais_recorrente(dicio):
+    top5 = [None, None, None, None, None]
     for palavra in dicio:
-
-
-def mais_recorrente(conteudo):
-    dicio = parse_conteudo(conteudo)
+        for i in range(0, len(dicio)):
+            if top5[i] == None:
+                top5[i] = palavra
+                break
+            elif dicio.get(palavra) > dicio.get(top5[i]):
+                top5 = insere(palavra, top5, i)
+                break
+    return top5
 
 
 s = socket(AF_INET, SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(1)
-(conect, add) = s.accept()
-pedido = conect.recv()
+while True:
+    (connect, add) = s.accept()
+    pedido = connect.recv(1024)
+    resposta = processamento(str(pedido))
+    connect.send(str.encode( resposta))
+    #connect.recv()
+    s.close()
+
